@@ -24,6 +24,25 @@
 | Dockerfile                                             | イメージ作成設定          |
 | mailbot.yaml, mariadb.yaml, minio.yaml, namespace.yaml | k8s Pods設定ファイル    |
 
+### Docker/Kubernetes環境変数リスト
+
+| 名前                   | 説明                     | パラメータタイプ      |
+|----------------------|------------------------|---------------|
+| DB_URL               | データベースURL              | string        |
+| UVICRON_HOST         | Uvicornリスニングアドレス       | string        |
+| UVICRON_PORT         | Uvicornリスニングポート        | int           |
+| UVICRON_DEBUG        | Uvicorn/FastAPIデバッグモード | string on/off |
+| AWS_ENDPOINT         | S3バケットアドレス             | string        |
+| AWS_ACCESS_KEY       | S3バケットアクセスキー           | string        |
+| AWS_SECRET_KEY       | S3バケットシークレットキー         | string        |
+| AWS_BUCKET_NAME      | S3バケット名                | string        |
+| MAIL_USER            | メールユーザー名               | string        |
+| MAIL_PASSWORD        | メールパスワード               | string        |
+| MAIL_FROM            | メール送信元アドレス             | string        |
+| MAIL_SERVER          | メールサーバー                | string        |
+| MAIL_PORT            | メールサーバーポート             | string        |
+| MAIL_SEND_SLEEP_TIME | メール送信間隔 (秒)            | int           |
+
 ### ホスト環境でのデプロイ
 
 ```
@@ -111,33 +130,14 @@ $ docker-compose up -d
 6. Podログを確認: kubectl logs -f pod名前 -n namespace
 ```
 
-### Docker/Kubernetes環境変数リスト
-
-| 名前                   | 説明                     | パラメータタイプ      |
-|----------------------|------------------------|---------------|
-| DB_URL               | データベースURL              | string        |
-| UVICRON_HOST         | Uvicornリスニングアドレス       | string        |
-| UVICRON_PORT         | Uvicornリスニングポート        | int           |
-| UVICRON_DEBUG        | Uvicorn/FastAPIデバッグモード | string on/off |
-| AWS_ENDPOINT         | S3バケットアドレス             | string        |
-| AWS_ACCESS_KEY       | S3バケットアクセスキー           | string        |
-| AWS_SECRET_KEY       | S3バケットシークレットキー         | string        |
-| AWS_BUCKET_NAME      | S3バケット名                | string        |
-| MAIL_USER            | メールユーザー名               | string        |
-| MAIL_PASSWORD        | メールパスワード               | string        |
-| MAIL_FROM            | メール送信元アドレス             | string        |
-| MAIL_SERVER          | メールサーバー                | string        |
-| MAIL_PORT            | メールサーバーポート             | string        |
-| MAIL_SEND_SLEEP_TIME | メール送信間隔 (秒)            | int           |
-
 # インターフェースURI説明
 
-| URI           | リクエスト方法 | 説明                    |
-|---------------|---------|-----------------------|
-| /api/docs     | GET     | Swaggerインターフェースドキュメント |
-| /api/redoc    | GET     | Redocインターフェースドキュメント   |
-| api/mail/send | POST    | メール送信                 |
-| api/mail/get  | GET     | 送信メール履歴情報取得           |
+| URI            | リクエスト方法 | 説明                    |
+|----------------|---------|-----------------------|
+| /api/docs      | GET     | Swaggerインターフェースドキュメント |
+| /api/redoc     | GET     | Redocインターフェースドキュメント   |
+| /api/mail/send | POST    | メール送信                 |
+| /api/mail/get  | GET     | 送信メール履歴情報取得           |
 
 ### レスポンスステータスコード説明
 
