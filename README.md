@@ -101,10 +101,11 @@ $ docker-compose up -d
 ### Kubernetesデプロイ
 
 ```
-1. Kubernetesのコンポーネント、etcd、Calicoをインストールし、CoreDNSの外部DNSを設定する。
+1. minikubeでKubernetesのコンポーネント、etcd、Calicoをインストールし、CoreDNSの外部DNS、Nginx proxy_passを設定する。
 2. 名前空間を設定
 3. YAMLファイルを作成し、レプリカセット、アンチアフィニティポリシー、クラスター、およびNodePortを定義
 4. Podを実行: kubectl apply -f xxx.yaml
+5. データベーステーブル構造をMySQLにインポートし、MinIOのバケットとリージョンを設定する。
 5. トラブルシューティング: kubectl describe pod pod名前 -n namespace
 6. Podログを確認: kubectl logs -f pod名前 -n namespace
 ```
