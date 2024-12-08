@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  namespace: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      containers:
+      - name: minio
+        image: minio/minio:latest
+        args:
+        - server
+        - /data
+        - --console-address
+        - ":9001"
+        ports:
+        - containerPort: 9000
+        - containerPort: 9001
+        env:
+        - name: MINIO_ROOT_USER
+          value: adminadmin
+        - name: MINIO_ROOT_PASSWORD
+          value: adminadmin
+        - name: MINIO_BUCKETS
+          value: "email-attachment-file"   # 指定存储桶
+        - name: MINIO_REGION         # 指定区域
+          value: "us-east-1"         # 您想要的区域名称
+        volumeMounts:
+        - name: minio-data
+          mountPath: /data
+        - name: minio-config
+          mountPath: /root/.minio
+      volumes:
+      - name: minio-data
+        hostPath:
+          path: /root/minio-data
+      - name: minio-config
+        hostPath:
+          path: /root/minio-data/config
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: minio
+            topologyKey: "kubernetes.io/hostname"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+  namespace: test
+spec:
+  type: NodePort
+  ports:
+  - name: web-ui
+    port: 9000
+    targetPort: 9000
+    nodePort: 30002
+  - name: console
+    port: 9001
+    targetPort: 9001
+    nodePort: 30003
+  selector:
+    app: minio
+

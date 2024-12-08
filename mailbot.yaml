@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailbot
+  namespace: test
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: mailbot
+  template:
+    metadata:
+      labels:
+        app: mailbot
+    spec:
+      containers:
+        - name: mailbot
+          image: mailbot:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          env:
+            - name: DB_URL
+              value: mysql://root:111111@mariadb:3306/mailbot
+            - name: UVICRON_HOST
+              value: 0.0.0.0
+            - name: UVICRON_PORT
+              value: "8000"
+            - name: UVICRON_DEBUG
+              value: "on"
+            - name: AWS_ENDPOINT
+              value: http://minio:9000
+            - name: AWS_ACCESS_KEY
+              value: adminadmin
+            - name: AWS_SECRET_KEY
+              value: adminadmin
+            - name: AWS_BUCKET_NAME
+              value: email-attachment-file
+            - name: MAIL_USER
+              value: no-reply@aizhao.pro
+            - name: MAIL_PASSWORD
+              value: tfMrFVxaP3U64tab8sPa
+            - name: MAIL_FROM
+              value: no-reply@aizhao.pro
+            - name: MAIL_SERVER
+              value: smtp.qiye.aliyun.com
+            - name: MAIL_PORT
+              value: "465"
+            - name: MAIL_SEND_SLEEP_TIME
+              value: "10"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - mailbot
+              topologyKey: "kubernetes.io/hostname"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailbot
+  namespace: test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app: mailbot
