@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  mailbot-web:
+    container_name: mailbot-web
+    image: mailbot-web:latest
+    ports:
+      - 80:80
+    volumes:
+      - /root/nginx.conf:/etc/nginx/nginx.conf
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=adminadmin
+      - MINIO_ROOT_PASSWORD=adminadmin
+    volumes:
+      - /root/minio-data:/dat
+      - /root/minio-data/config:/root/.minio
+    command: server /data --console-address ":9001"
+    restart: always
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 111111
+      MYSQL_DATABASE: mailbot
+      MYSQL_USER: mailboot
+      MYSQL_PASSWORD: 111111
+    volumes:
+      - /root/mysql-data:/var/lib/mysql
+    restart: always
+  mailbot:
+    container_name: mailbot
+    image: mailbot:latest
+    environment:
+      - DB_URL=mysql://root:111111@mariadb:3306/mailbot
+      - UVICRON_HOST=0.0.0.0
+      - UVICRON_PORT=8000
+      - UVICRON_DEBUG=on
+      - AWS_ENDPOINT=http://minio:9000
+      - AWS_ACCESS_KEY=adminadmin
+      - AWS_SECRET_KEY=adminadmin
+      - AWS_BUCKET_NAME=email-attachment-file
+      - MAIL_USER=no-reply@aizhao.pro
+      - MAIL_PASSWORD=tfMrFVxaP3U64tab8sPa
+      - MAIL_FROM=no-reply@aizhao.pro
+      - MAIL_SERVER=smtp.qiye.aliyun.com
+      - MAIL_PORT=465
+      - MAIL_SEND_SLEEP_TIME=10
